@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* Enable manual class-based dark mode (Tailwind v4 CSS-first config) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Optional: smooth color transitions when toggling */
+html {
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Base light/dark backgrounds to reduce flash */
+body {
+	background-color: #ffffff;
+}
+body.dark, .dark body {
+	background-color: #09090b; /* zinc-950 */
+}
