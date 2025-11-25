@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 
 const DATA = {
   name: "Jean Alvarez",
-  role: "Data Scientist & Analyst",
+  role: "Data Science & Analytics",
   tagline:
     "Data scientist blending finance and ML—turning messy data into decisions with Python, SQL, and reproducible pipelines.",
   location: "Tampa, FL",
@@ -12,8 +12,8 @@ const DATA = {
   links: {
     email: "mailto:jeanma6742@gmail.com?subject=Hi%20Jean%20—%20Portfolio%20Inquiry",
     github: "https://github.com/Je4n-A",
-    linkedin: "https://www.linkedin.com/in/jeanamlvarez034/",
-    kaggle: "https://www.kaggle.com/your-handle",
+    linkedin: "https://www.linkedin.com/in/jeanamalvarez034/",
+    // kaggle: "https://www.kaggle.com/your-handle",
     resume: "/resume/Jean_Alvarez_Resume.pdf", 
   },
   skills: {
@@ -21,6 +21,7 @@ const DATA = {
       "Python",
       "SQL",
       "R (basic)",
+      "JavaScript",
     ],
     libraries: [
       "pandas",
@@ -31,7 +32,7 @@ const DATA = {
       "Streamlit",
     ],
     data: ["PostgreSQL", "SQLite", "Excel/PowerQuery", "ETL", "APIs"],
-    platforms: ["Git/GitHub", "Docker"],
+    platforms: ["Git/GitHub"],
     concepts: ["EDA", "ML Pipelines", "Feature Engineering", "A/B Testing", "Time Series"],
   },
   projects: [
@@ -54,48 +55,63 @@ const DATA = {
       metrics: ["AUC 0.762", "ECE 0.089", "t* = 0.21"],
     },
     {
-      title: "Behavioral Finance: Health vs Retirement",
-      period: "2025",
+      title: "Behavioral Finance Research: Health vs Retirement",
+      period: "Aug 2024 – Nov 2024",
       summary:
-        "Research replication (ARDL/VAR) exploring substitution between healthcare spend and retirement saving; code + paper.",
+        "Behavioral finance study (ARDL/VAR) on substitution between healthcare spending and retirement saving; reproducible code and paper.",
       tags: ["Time Series", "Econometrics", "statsmodels"],
       links: { repo: "https://github.com/your-username/behavioral-finance-paper" },
       metrics: ["ARDL", "IRF", "FEVD"],
     },
   ],
   experience: [
-    {
-      org: "Chief Digital & AI Office (CDAO) / IAE",
-      role: "Data Science Intern",
-      period: "2025",
-      bullets: [
-        "Prototyped ML features for internal analytics tools and automated reporting.",
-        "Hardened pipelines: validation checks, unit-tested transforms, and metadata logs.",
-      ],
-    },
-    {
-      org: "USSOCOM (via USF IAE)",
-      role: "Data Analyst Intern",
-      period: "2024",
-      bullets: [
-        "Built Streamlit + PostgreSQL app with auth and role-based views for spend planning.",
-        "Implemented dashboards, CRUD workflows, and user analytics.",
-      ],
-    },
-  ],
+  {
+    org: "Chief Digital & AI Office (CDAO) / USF IAE",
+    role: "Data Science Intern",
+    period: "Aug 2025 – Present",
+    bullets: [
+      "Designed an LLM-driven document classifier to auto-route reports using a clear taxonomy and success metrics.",
+      "Built data and MLOps foundations (ingestion/cleaning, PII remediation, embeddings search, experiment tracking) in a secure environment.",
+      "Implemented privacy-first portal analytics with event schema, server-side logging/audit trails, and usage dashboards.",
+    ],
+  },
+  {
+    org: "USSOCOM (via USF IAE)",
+    role: "Data Analyst Intern",
+    period: "Jan 2025 – Aug 2025",
+    bullets: [
+      "Developed a Streamlit-based financial analysis app using Python and PostgreSQL to automate reporting for leadership.",
+      "Improved real-time reporting by integrating multiple financial systems, enhancing data accessibility and automation.",
+      "Partnered with analysts and command staff to translate needs into user-friendly analytics tools.",
+    ],
+  },
+  {
+    org: "Ivette Cases & Associates",
+    role: "Payroll Specialist",
+    period: "Jun 2022 – Jan 2025",
+    bullets: [
+      "Processed recurring payrolls (weekly, semiweekly, and monthly) for multiple small-business clients with varying pay structures.",
+      "Reconciled payroll expenses against internal records and bank statements to ensure accuracy and flag discrepancies.",
+      "Prepared and submitted payroll tax files and generated reports on bonuses, overtime, and vacation balances in compliance with state and local regulations.",
+    ],
+  },
+],
   education: [
-    {
-      school: "University of South Florida",
-      program: "M.S. — Financial Analysis",
-      period: "Fall 2025 — Present",
-    },
-    {
-      school: "University of South Florida",
-      program: "B.S. — Business Analytics & Information Systems",
-      period: "Completed in 3 years",
-    },
+  {
+    school: "University of South Florida",
+    program: "M.S. — Financial Analytics",
+    period: "Fall 2025 — Fall 2026 (in progress)",
+  },
+  {
+    school: "University of South Florida",
+    program: "B.S. — Business Analytics & Information Systems",
+    period: "May 2025",
+  },
+],
+  certs: [
+    "USF Data Analytics Program (Excel & Tableau)",
+    "Google Data Analytics Certificate"
   ],
-  certs: ["Google Data Analytics Certificate"],
 };
 
 function useDarkMode() {
@@ -475,7 +491,7 @@ function Contact({ links }: { links: typeof DATA.links }) {
     { label: "Email", href: links.email, icon: "✉" },
     { label: "GitHub", href: links.github, icon: "⚡" },
     { label: "LinkedIn", href: links.linkedin, icon: "💼" },
-    { label: "Kaggle", href: links.kaggle, icon: "📊" },
+    // { label: "Kaggle", href: links.kaggle, icon: "📊" },
   ];
   return (
     <div className="rounded-2xl border border-zinc-200 bg-gradient-to-br from-white to-zinc-50 p-8 shadow-sm dark:border-zinc-800 dark:from-zinc-900 dark:to-zinc-900/50 sm:p-10">
