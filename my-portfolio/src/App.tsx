@@ -12,9 +12,9 @@ const DATA = {
   links: {
     email: "mailto:jeanma6742@gmail.com?subject=Hi%20Jean%20—%20Portfolio%20Inquiry",
     github: "https://github.com/Je4n-A",
-    linkedin: "https://www.linkedin.com/in/jeanamlvarez034/",
+    linkedin: "https://www.linkedin.com/in/jeanamalvarez034/",
     // kaggle: "https://www.kaggle.com/your-handle",
-    resume: "/documents/Jean_Alvarez_Resume-2025_pdf.pdf", 
+    resume: "https://docs.google.com/viewer?url=https://Je4n-A.github.io/Portfolio_Website/resume/Jean_Alvarez_Resume.pdf", 
   },
   skills: {
     languages: [
@@ -325,7 +325,7 @@ function Hero() {
               className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-zinc-800 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 dark:focus:ring-white sm:px-6 sm:py-3 sm:text-base"
               target="_blank" rel="noreferrer"
             >
-              Download Resume
+              View Resume
             </a>
             <a
               href={DATA.links.linkedin}
