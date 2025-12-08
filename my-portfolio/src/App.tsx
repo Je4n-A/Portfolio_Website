@@ -12,7 +12,7 @@ const DATA = {
   links: {
     email: "mailto:jeanma6742@gmail.com?subject=Hi%20Jean%20—%20Portfolio%20Inquiry",
     github: "https://github.com/Je4n-A",
-    linkedin: "https://www.linkedin.com/in/jeanamalvarez034/",
+    linkedin: "https://www.linkedin.com/in/jeanamlvarez034/",
     // kaggle: "https://www.kaggle.com/your-handle",
     resume: "my-portfolio\src\documents\Jean_Alvarez_Resume-2025_pdf.pdf", 
   },
