@@ -14,7 +14,7 @@ const DATA = {
     github: "https://github.com/Je4n-A",
     linkedin: "https://www.linkedin.com/in/jeanamlvarez034/",
     // kaggle: "https://www.kaggle.com/your-handle",
-    resume: "my-portfolio\src\documents\Jean_Alvarez_Resume-2025_pdf.pdf", 
+    resume: "/documents/Jean_Alvarez_Resume-2025_pdf.pdf", 
   },
   skills: {
     languages: [
@@ -42,7 +42,7 @@ const DATA = {
       summary:
         "Streamlit app with PostgreSQL & role-based access; CRUD, audit trails, and real-time dashboards for multi-unit spend planning.",
       tags: ["Streamlit", "PostgreSQL", "Auth", "Dashboards"],
-      links: { repo: "https://github.com/your-username/spend-plan", demo: "#" },
+      links: { repo: "https://github.com/Je4n-A/Streamlit_code", demo: "#" },
       metrics: ["3 user roles", "<200ms queries", ">10 tables"],
     },
     {
@@ -51,7 +51,7 @@ const DATA = {
       summary:
         "Calibrated logistic regression with cost-sensitive thresholding; ROC-AUC 0.762, Brier 0.176; 49.5% expected cost reduction vs 0.5 cutoff.",
       tags: ["scikit-learn", "Calibration", "Class Imbalance"],
-      links: { repo: "https://github.com/your-username/german-credit", demo: "#" },
+      links: { repo: "https://github.com/Je4n-A/German_Credit_Data_Science", demo: "#" },
       metrics: ["AUC 0.762", "ECE 0.089", "t* = 0.21"],
     },
     {
@@ -60,7 +60,7 @@ const DATA = {
       summary:
         "Behavioral finance study (ARDL/VAR) on substitution between healthcare spending and retirement saving; reproducible code and paper.",
       tags: ["Time Series", "Econometrics", "statsmodels"],
-      links: { paper: "my-portfolio\src\documents\cost_of_health_6_29_25.pdf" },
+      links: { paper: "documents/cost_of_health_6_29_25.pdf" },
       metrics: ["ARDL", "IRF", "FEVD"],
     },
   ],
