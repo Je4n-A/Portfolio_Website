@@ -14,7 +14,7 @@ const DATA = {
     github: "https://github.com/Je4n-A",
     linkedin: "https://www.linkedin.com/in/jeanamalvarez034/",
     // kaggle: "https://www.kaggle.com/your-handle",
-    resume: "/resume/Jean_Alvarez_Resume.pdf", 
+    resume: "F:\Portfolio_Website\my-portfolio\src\documents\Jean_Alvarez_Resume-2025_pdf.pdf", 
   },
   skills: {
     languages: [
@@ -60,7 +60,7 @@ const DATA = {
       summary:
         "Behavioral finance study (ARDL/VAR) on substitution between healthcare spending and retirement saving; reproducible code and paper.",
       tags: ["Time Series", "Econometrics", "statsmodels"],
-      links: { repo: "https://github.com/your-username/behavioral-finance-paper" },
+      links: { paper: "F:\Portfolio_Website\my-portfolio\src\documents\cost_of_health_6_29_25.pdf" },
       metrics: ["ARDL", "IRF", "FEVD"],
     },
   ],
