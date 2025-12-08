@@ -12,9 +12,9 @@ const DATA = {
   links: {
     email: "mailto:jeanma6742@gmail.com?subject=Hi%20Jean%20—%20Portfolio%20Inquiry",
     github: "https://github.com/Je4n-A",
-    linkedin: "https://www.linkedin.com/in/jeanamalvarez034/",
+    linkedin: "https://www.linkedin.com/in/jeanmalvarez034/",
     // kaggle: "https://www.kaggle.com/your-handle",
-    resume: "https://docs.google.com/viewer?url=https://Je4n-A.github.io/Portfolio_Website/resume/Jean_Alvarez_Resume.pdf", 
+    resume: "https://docs.google.com/viewer?url=https://Je4n-A.github.io/Portfolio_Website/documents/Jean_Alvarez_Resume-2025_pdf.pdf", 
   },
   skills: {
     languages: [
@@ -60,7 +60,7 @@ const DATA = {
       summary:
         "Behavioral finance study (ARDL/VAR) on substitution between healthcare spending and retirement saving; reproducible code and paper.",
       tags: ["Time Series", "Econometrics", "statsmodels"],
-      links: { paper: "documents/cost_of_health_6_29_25.pdf" },
+      links: { paper: "https://docs.google.com/viewer?url=https://Je4n-A.github.io/Portfolio_Website/documents/cost_of_health_6_29_25.pdf" },
       metrics: ["ARDL", "IRF", "FEVD"],
     },
   ],
@@ -397,6 +397,18 @@ function ProjectGrid({ projects }: { projects: typeof DATA.projects }) {
                       className="text-emerald-600 underline-offset-2 transition-colors hover:text-emerald-700 hover:underline dark:text-emerald-400 dark:hover:text-emerald-300"
                     >
                       Demo
+                    </a>
+                  )}
+                  {/* @ts-ignore */}
+                  {p.links?.paper && (
+                    <a
+                      // @ts-ignore
+                      href={p.links.paper}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-emerald-600 underline-offset-2 transition-colors hover:text-emerald-700 hover:underline dark:text-emerald-400 dark:hover:text-emerald-300"
+                    >
+                      Paper
                     </a>
                   )}
                 </div>
