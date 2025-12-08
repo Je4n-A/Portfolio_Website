@@ -249,7 +249,11 @@ export function Minesweeper() {
                 {win ? "Victory! Points Doubled!" : "Game Over! You lost your wager."}
               </p>
               <button
-                onClick={() => setGameActive(false)}
+                onClick={() => {
+                  setGameActive(false);
+                  setGameOver(false);
+                  setWin(false);
+                }}
                 className="flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900"
               >
                 <RefreshCw className="h-4 w-4" /> Play Again

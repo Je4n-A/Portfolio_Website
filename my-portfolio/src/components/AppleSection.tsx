@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { cn } from "../utils/cn"; // We'll create this utility
+import { cn } from "../utils/cn";
 
 interface AppleSectionProps {
   children: React.ReactNode;
