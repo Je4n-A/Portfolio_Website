@@ -39,7 +39,7 @@ export const DATA = {
       summary:
         "Streamlit app with PostgreSQL & role-based access; CRUD, audit trails, and real-time dashboards for multi-unit spend planning.",
       tags: ["Streamlit", "PostgreSQL", "Auth", "Dashboards"],
-      links: { repo: "https://github.com/Je4n-A/Streamlit_code", demo: "#" },
+      links: { repo: "https://github.com/Je4n-A/Streamlit_code", demo: "https://appcode-ukpnkt3pvmsthn4y7qgfr4.streamlit.app/" },
       metrics: ["3 user roles", "<200ms queries", ">10 tables"],
     },
     {
