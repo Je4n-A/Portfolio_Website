@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Crown } from "lucide-react";
+import { MessageCircle, X, Send, Crown, Settings, Key } from "lucide-react";
 import { DATA } from "../data";
 
 interface Message {
@@ -11,6 +11,13 @@ interface Message {
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [apiKey, setApiKey] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("openai_api_key") || "";
+    }
+    return "";
+  });
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -19,6 +26,7 @@ export function Chatbot() {
     },
   ]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -27,9 +35,15 @@ export function Chatbot() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading]);
 
-  const handleSend = () => {
+  const handleSaveKey = (key: string) => {
+    setApiKey(key);
+    localStorage.setItem("openai_api_key", key);
+    setShowSettings(false);
+  };
+
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -40,10 +54,10 @@ export function Chatbot() {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsLoading(true);
 
-    // Simulate bot thinking
-    setTimeout(() => {
-      const botResponse = getBotResponse(input);
+    try {
+      const botResponse = await getBotResponse(input);
       setMessages((prev) => [
         ...prev,
         {
@@ -52,10 +66,64 @@ export function Chatbot() {
           sender: "bot",
         },
       ]);
-    }, 600);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          text: "Alas! My connection to the magical realm (API) has failed. Please check your key.",
+          sender: "bot",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const getBotResponse = (query: string): string => {
+  const getBotResponse = async (query: string): Promise<string> => {
+    // If no API key, use the fallback logic
+    if (!apiKey) {
+      // Simulate delay for realism
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      return getFallbackResponse(query);
+    }
+
+    // Call OpenAI API
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content: `You are a Royal Jester for King Jean Alvarez's portfolio. 
+              Your persona is funny, archaic, and loyal. 
+              Here is the data about Jean: ${JSON.stringify(DATA)}. 
+              Answer the user's questions based on this data. 
+              Keep answers short (under 3 sentences) and entertaining.`,
+            },
+            { role: "user", content: query },
+          ],
+        }),
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error("AI Error:", error);
+      return "My crystal ball is cloudy (API Error). I shall revert to my simple scroll of answers.";
+    }
+  };
+
+  const getFallbackResponse = (query: string): string => {
     const q = query.toLowerCase();
 
     if (q.includes("hello") || q.includes("hi") || q.includes("greetings")) {
@@ -80,7 +148,7 @@ export function Chatbot() {
       return "Why did the data scientist break up with the graph? Because there was no correlation! *Jingles bells*";
     }
 
-    return "Alas, I am but a simple fool. I do not understand thy query. Ask me about his skills, projects, or how to contact him!";
+    return "Alas, I am but a simple fool without my magic key. Ask me about his skills, projects, or how to contact him!";
   };
 
   return (
@@ -110,64 +178,117 @@ export function Chatbot() {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">The Royal Jester</h3>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">At your service</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {apiKey ? "Powered by AI Magic" : "Simple Mode"}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="rounded-full p-1 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Messages */}
-            <div className="h-80 overflow-y-auto p-4 bg-zinc-50 dark:bg-zinc-950/50">
-              <div className="flex flex-col gap-3">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
-                        msg.sender === "user"
-                          ? "bg-emerald-600 text-white rounded-br-none"
-                          : "bg-white text-zinc-800 shadow-sm dark:bg-zinc-900 dark:text-zinc-200 rounded-bl-none border border-zinc-200 dark:border-zinc-800"
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setShowSettings(!showSettings)}
+                  className="rounded-full p-1 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                >
+                  <Settings className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-full p-1 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
             </div>
 
+            {/* Settings / Messages */}
+            {showSettings ? (
+              <div className="h-80 p-6 bg-zinc-50 dark:bg-zinc-950/50">
+                <h4 className="font-semibold text-zinc-900 dark:text-white mb-2">Magic Settings</h4>
+                <p className="text-xs text-zinc-500 mb-4">
+                  Enter your OpenAI API Key to enable the smart AI Jester. The key is stored only in your browser.
+                </p>
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Key className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                    <input
+                      type="password"
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      placeholder="sk-..."
+                      className="w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleSaveKey(apiKey)}
+                    className="w-full rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                  >
+                    Save Key
+                  </button>
+                  <button
+                    onClick={() => handleSaveKey("")}
+                    className="w-full rounded-lg border border-zinc-200 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900"
+                  >
+                    Clear Key
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="h-80 overflow-y-auto p-4 bg-zinc-50 dark:bg-zinc-950/50">
+                <div className="flex flex-col gap-3">
+                  {messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
+                          msg.sender === "user"
+                            ? "bg-emerald-600 text-white rounded-br-none"
+                            : "bg-white text-zinc-800 shadow-sm dark:bg-zinc-900 dark:text-zinc-200 rounded-bl-none border border-zinc-200 dark:border-zinc-800"
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
+                    </div>
+                  ))}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="rounded-2xl rounded-bl-none bg-white px-4 py-2 text-sm text-zinc-500 shadow-sm dark:bg-zinc-900 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800">
+                        <span className="animate-pulse">Thinking...</span>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </div>
+            )}
+
             {/* Input */}
-            <div className="border-t border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSend();
-                }}
-                className="flex gap-2"
-              >
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask the Jester..."
-                  className="flex-1 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
-                />
-                <button
-                  type="submit"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white transition-colors hover:bg-emerald-700"
+            {!showSettings && (
+              <div className="border-t border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSend();
+                  }}
+                  className="flex gap-2"
                 >
-                  <Send className="h-4 w-4" />
-                </button>
-              </form>
-            </div>
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder={apiKey ? "Ask AI Jester..." : "Ask simple questions..."}
+                    className="flex-1 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
+                </form>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
