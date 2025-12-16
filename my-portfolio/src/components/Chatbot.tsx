@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Crown, Settings, Key } from "lucide-react";
+import { MessageCircle, X, Send, Bot } from "lucide-react";
 import { DATA } from "../data";
 
 interface Message {
@@ -11,17 +11,10 @@ interface Message {
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [apiKey, setApiKey] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("openai_api_key") || "";
-    }
-    return "";
-  });
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Greetings, traveler! I am the Royal Jester. Ask me anything about King Jean's exploits, and I shall entertain thee with knowledge!",
+      text: "Hi there! I'm Jean's virtual assistant. Ask me anything about his skills, projects, or experience.",
       sender: "bot",
     },
   ]);
@@ -37,12 +30,6 @@ export function Chatbot() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  const handleSaveKey = (key: string) => {
-    setApiKey(key);
-    localStorage.setItem("openai_api_key", key);
-    setShowSettings(false);
-  };
-
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -56,8 +43,11 @@ export function Chatbot() {
     setInput("");
     setIsLoading(true);
 
-    try {
-      const botResponse = await getBotResponse(input);
+    // Simulate "thinking" time
+    const thinkingTime = Math.random() * 1000 + 500; // 0.5-1.5 seconds
+
+    setTimeout(() => {
+      const botResponse = getSmartResponse(input);
       setMessages((prev) => [
         ...prev,
         {
@@ -66,89 +56,98 @@ export function Chatbot() {
           sender: "bot",
         },
       ]);
-    } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          text: "Alas! My connection to the magical realm (API) has failed. Please check your key.",
-          sender: "bot",
-        },
-      ]);
-    } finally {
       setIsLoading(false);
-    }
+    }, thinkingTime);
   };
 
-  const getBotResponse = async (query: string): Promise<string> => {
-    // If no API key, use the fallback logic
-    if (!apiKey) {
-      // Simulate delay for realism
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      return getFallbackResponse(query);
-    }
-
-    // Call OpenAI API
-    try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "system",
-              content: `You are a Royal Jester for King Jean Alvarez's portfolio. 
-              Your persona is funny, archaic, and loyal. 
-              Here is the data about Jean: ${JSON.stringify(DATA)}. 
-              Answer the user's questions based on this data. 
-              Keep answers short (under 3 sentences) and entertaining.`,
-            },
-            { role: "user", content: query },
-          ],
-        }),
-      });
-
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
-      return data.choices[0].message.content;
-    } catch (error) {
-      console.error("AI Error:", error);
-      return "My crystal ball is cloudy (API Error). I shall revert to my simple scroll of answers.";
-    }
-  };
-
-  const getFallbackResponse = (query: string): string => {
+  const getSmartResponse = (query: string): string => {
     const q = query.toLowerCase();
 
-    if (q.includes("hello") || q.includes("hi") || q.includes("greetings")) {
-      return "Huzzah! A warm welcome to you, noble guest. What brings you to the King's digital court?";
-    }
-    if (q.includes("who") || q.includes("name")) {
-      return `He is known as ${DATA.name}, the Grand Wizard of Data and Analytics!`;
-    }
-    if (q.includes("skill") || q.includes("stack") || q.includes("tech")) {
-      return `Ah, the King's arsenal! He wields ${DATA.skills.languages.join(", ")} like a master swordsman, and crafts spells with ${DATA.skills.libraries.join(", ")}.`;
-    }
-    if (q.includes("project") || q.includes("work") || q.includes("built")) {
-      return `The King has built many wonders! Like the ${DATA.projects[0].title}, or the legendary ${DATA.projects[1].title}. Scroll down to witness them in all their glory!`;
-    }
-    if (q.includes("contact") || q.includes("email") || q.includes("reach")) {
-      return "You wish to send a raven? You may reach His Majesty via the 'Contact' section, or simply shout really loud... (or just email him).";
-    }
-    if (q.includes("resume") || q.includes("cv")) {
-      return "The Royal Scroll! You can view his resume by clicking the button in the Hero section. It is a document of great power.";
-    }
-    if (q.includes("joke")) {
-      return "Why did the data scientist break up with the graph? Because there was no correlation! *Jingles bells*";
+    // Helper to pick random response
+    const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+
+    // Greetings
+    if (q.match(/\b(hi|hello|hey|greetings|yo)\b/)) {
+      return pick([
+        "Hello! How can I help you today?",
+        "Hi there! Feel free to ask about Jean's work.",
+        "Greetings! I'm here to answer your questions about this portfolio.",
+      ]);
     }
 
-    return "Alas, I am but a simple fool without my magic key. Ask me about his skills, projects, or how to contact him!";
+    // Identity
+    if (q.match(/\b(who|name|creator|king)\b/)) {
+      return pick([
+        `This is the portfolio of ${DATA.name}.`,
+        `I'm an assistant for ${DATA.name}.`,
+        `You're viewing the work of ${DATA.name}.`,
+      ]);
+    }
+
+    // Skills / Tech
+    if (q.match(/\b(skill|stack|tech|language|code|program)\b/)) {
+      const langs = DATA.skills.languages.join(", ");
+      const libs = DATA.skills.libraries.join(", ");
+      return pick([
+        `Jean is proficient in ${langs} and uses libraries like ${libs}.`,
+        `His tech stack includes ${langs}, along with ${libs}.`,
+        `He specializes in ${langs}.`,
+      ]);
+    }
+
+    // Projects
+    if (q.match(/\b(project|work|built|portfolio|app|website)\b/)) {
+      const p1 = DATA.projects[0]?.title || "recent projects";
+      const p2 = DATA.projects[1]?.title || "various apps";
+      return pick([
+        `Jean has built several projects, including ${p1} and ${p2}. Check out the Projects section for more!`,
+        `You can see his work below, featuring projects like ${p1}.`,
+        `He's worked on things like ${p1}. Scroll down to see the full list.`,
+      ]);
+    }
+
+    // Contact
+    if (q.match(/\b(contact|email|reach|hire|job)\b/)) {
+      return pick([
+        "You can reach Jean via the Contact section at the bottom of the page.",
+        "Feel free to send him an email through the contact form.",
+        "He's open to opportunities! Check the Contact section for details.",
+      ]);
+    }
+
+    // Resume
+    if (q.match(/\b(resume|cv|document)\b/)) {
+      return pick([
+        "You can view or download his resume from the Hero section at the top.",
+        "His resume is available via the button in the top section.",
+        "Check the 'Resume' button at the top of the page.",
+      ]);
+    }
+
+    // Jokes / Fun
+    if (q.match(/\b(joke|funny|laugh)\b/)) {
+      return pick([
+        "Why do programmers prefer dark mode? Because light attracts bugs.",
+        "I'd tell you a UDP joke, but you might not get it.",
+        "There are 10 types of people in the world: those who understand binary, and those who don't.",
+      ]);
+    }
+
+    // AI / Self-awareness
+    if (q.match(/\b(ai|bot|real|fake|smart|gpt)\b/)) {
+      return pick([
+        "I'm a simple automated assistant running in your browser.",
+        "I'm just a bit of code here to help you navigate the site.",
+        "I'm not a complex AI, just a helpful bot!",
+      ]);
+    }
+
+    // Default
+    return pick([
+      "I'm not sure about that. Try asking about skills, projects, or contact info.",
+      "I didn't quite catch that. You can ask me about Jean's work or experience.",
+      "Could you rephrase that? I can tell you about his projects or skills.",
+    ]);
   };
 
   return (
@@ -174,121 +173,78 @@ export function Chatbot() {
             <div className="flex items-center justify-between bg-zinc-100 px-4 py-3 dark:bg-zinc-900">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
-                  <Crown className="h-5 w-5" />
+                  <Bot className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">The Royal Jester</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">Assistant</h3>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    {apiKey ? "Powered by AI Magic" : "Simple Mode"}
+                    Online
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setShowSettings(!showSettings)}
-                  className="rounded-full p-1 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
-                >
-                  <Settings className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="rounded-full p-1 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="rounded-full p-1 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Messages */}
+            <div className="h-80 overflow-y-auto p-4 bg-zinc-50 dark:bg-zinc-950/50">
+              <div className="flex flex-col gap-3">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
+                        msg.sender === "user"
+                          ? "bg-emerald-600 text-white rounded-br-none"
+                          : "bg-white text-zinc-800 shadow-sm dark:bg-zinc-900 dark:text-zinc-200 rounded-bl-none border border-zinc-200 dark:border-zinc-800"
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="rounded-2xl rounded-bl-none bg-white px-4 py-2 text-sm text-zinc-500 shadow-sm dark:bg-zinc-900 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800">
+                      <span className="animate-pulse">Thinking...</span>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
-            {/* Settings / Messages */}
-            {showSettings ? (
-              <div className="h-80 p-6 bg-zinc-50 dark:bg-zinc-950/50">
-                <h4 className="font-semibold text-zinc-900 dark:text-white mb-2">Magic Settings</h4>
-                <p className="text-xs text-zinc-500 mb-4">
-                  Enter your OpenAI API Key to enable the smart AI Jester. The key is stored only in your browser.
-                </p>
-                <div className="space-y-3">
-                  <div className="relative">
-                    <Key className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
-                    <input
-                      type="password"
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      placeholder="sk-..."
-                      className="w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
-                    />
-                  </div>
-                  <button
-                    onClick={() => handleSaveKey(apiKey)}
-                    className="w-full rounded-lg bg-emerald-600 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-                  >
-                    Save Key
-                  </button>
-                  <button
-                    onClick={() => handleSaveKey("")}
-                    className="w-full rounded-lg border border-zinc-200 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900"
-                  >
-                    Clear Key
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="h-80 overflow-y-auto p-4 bg-zinc-50 dark:bg-zinc-950/50">
-                <div className="flex flex-col gap-3">
-                  {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
-                          msg.sender === "user"
-                            ? "bg-emerald-600 text-white rounded-br-none"
-                            : "bg-white text-zinc-800 shadow-sm dark:bg-zinc-900 dark:text-zinc-200 rounded-bl-none border border-zinc-200 dark:border-zinc-800"
-                        }`}
-                      >
-                        {msg.text}
-                      </div>
-                    </div>
-                  ))}
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="rounded-2xl rounded-bl-none bg-white px-4 py-2 text-sm text-zinc-500 shadow-sm dark:bg-zinc-900 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800">
-                        <span className="animate-pulse">Thinking...</span>
-                      </div>
-                    </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-              </div>
-            )}
-
             {/* Input */}
-            {!showSettings && (
-              <div className="border-t border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSend();
-                  }}
-                  className="flex gap-2"
+            <div className="border-t border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-950">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSend();
+                }}
+                className="flex gap-2"
+              >
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask a question..."
+                  className="flex-1 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
                 >
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder={apiKey ? "Ask AI Jester..." : "Ask simple questions..."}
-                    className="flex-1 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
-                  />
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
-                  >
-                    <Send className="h-4 w-4" />
-                  </button>
-                </form>
-              </div>
-            )}
+                  <Send className="h-4 w-4" />
+                </button>
+              </form>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
