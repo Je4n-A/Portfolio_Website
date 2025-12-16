@@ -8,17 +8,17 @@ interface Message {
   text: string;
   sender: "user" | "bot";
 }
-
+// fix
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<Message[]>([ 
     {
       id: "1",
       text: "Hi there! I'm Jean's virtual assistant. Ask me anything about his skills, projects, or experience.",
       sender: "bot",
     },
   ]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(""); 
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
